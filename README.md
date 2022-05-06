@@ -4,7 +4,7 @@ A small utility library to make videos from [Matplot++](https://github.com/aland
 figures. Depends on having `ffmpeg` installed. Feel free to use, but I doubt
 it's very portable. I just wanted it for a couple projects.
 
-## Using CMAKE FetchContent
+## Using CMake FetchContent
 
 ```
 FetchContent_Declare(
@@ -13,6 +13,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(videomaker)
 ```
+
+Then include `#include <videomaker/VideoMaker.h>`.
 
 ## Example
 
@@ -44,4 +46,6 @@ std::filesystem::path path("3drot.mp4");
 videoMaker.save(path);
 ```
 
-Output: ![](./example/3drot.mp4)
+**Output:**
+
+https://user-images.githubusercontent.com/7023667/167228854-0c1595b3-a86d-43a5-ae39-761cfac67575.mp4
