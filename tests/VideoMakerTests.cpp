@@ -5,7 +5,7 @@
 #include <cmath>
 
 TEST(VideoMakerTests, 3dRotTest) { 
-    VideoMaker::VideoMaker videoMaker;
+    VideoMaker::VideoMaker videoMaker(30);
 
     auto fig = matplot::figure(true);
     fig->size(1920,1080);
@@ -23,7 +23,7 @@ TEST(VideoMakerTests, 3dRotTest) {
 
     auto ax = matplot::gca();
     float da = ax->azimuth();
-    for (size_t i = 0; i <= 360; i+=5) {
+    for (size_t i = 0; i <= 180; i+=1) {
         ax->azimuth(da + i);
         videoMaker.addFrame(fig);
     }

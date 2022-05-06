@@ -14,12 +14,15 @@ namespace VideoMaker {
 
 
 std::filesystem::path VideoMaker::create_temporary_directory(size_t max_tries) {
+    // System temp directory path
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();
     size_t i = 0;
     std::random_device dev;
     std::mt19937 prng(dev());
     std::uniform_int_distribution<uint64_t> rand(0);
     std::filesystem::path path;
+    // Keep looping until we find a directory name that doesn't exist (up to
+    // the limit.
     while (true) {
         std::stringstream ss;
         ss << std::hex << rand(prng);
@@ -47,13 +50,14 @@ VideoMaker::~VideoMaker() {
 
 void VideoMaker::addFrame(matplot::figure_handle figure) {
     std::stringstream ss;
-    ss << this->numFrames << ".png";
+    ss << this->numFrames << ".jpg";
     std::filesystem::path figurePath = this->tempDirectoryPath / ss.str();
     figure->save(figurePath.string());
     this->numFrames += 1;
 }
 
 void VideoMaker::save(const std::filesystem::path& path) {
+    // If no frames, just exit
     if(this->numFrames == 0) {
         return;
     }
@@ -62,8 +66,10 @@ void VideoMaker::save(const std::filesystem::path& path) {
     pid_t ret;
     int status;
     if(pid == -1) {
+        // Failed to fork
         throw std::runtime_error("unable to fork");
     } else if(pid != 0) {
+        // Parent process
         while ((ret = waitpid(pid, &status, 0)) == -1) {
             if (errno != EINTR) {
                 throw std::runtime_error("errno != EINTR");
@@ -74,7 +80,7 @@ void VideoMaker::save(const std::filesystem::path& path) {
             throw std::runtime_error("Unexpected child status");
         }
     } else {
-        // forked process
+        // Child process
         char c1[] = "ffmpeg";
         char y[] = "-y";
         char quiet1[] = "-hide_banner";
@@ -85,11 +91,11 @@ void VideoMaker::save(const std::filesystem::path& path) {
         frameRatess << this->frameRate;
         char c4[] = "-i";
         std::stringstream pathss;
-        pathss << this->tempDirectoryPath.string() << "/%d.png";
+        pathss << this->tempDirectoryPath.string() << "/%d.jpg";
         char c6[] = "-c:v";
         char c7[] = "libx264";
-        char c8[] = "-s";
-        char c9[] = "1920x1080";
+        char c8[] = "-pix_fmt";
+        char c9[] = "yuv420p";
         std::string fileName = path.string();
         std::string pathString = pathss.str();
         std::string frameRateString = frameRatess.str();
