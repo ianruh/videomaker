@@ -11,6 +11,7 @@ else()
   add_compile_options()
 endif()
 
+option(BUILD_SHARED_LIBS "Build shared libraries"  ON)
 
 ################################# Dependencies ################################
 include(FetchContent)
@@ -41,13 +42,11 @@ endif()
 
 # cppmpc Library
 add_library(videomaker
-    videomaker/VideoMaker.h
     videomaker/VideoMaker.cpp
 )
 target_include_directories(videomaker PUBLIC videomaker/)
 target_link_libraries(videomaker matplot)
 target_compile_options(videomaker PRIVATE -Wall -Wextra -Wpedantic -Werror)
-
 
 ######## Tests ########
 enable_testing()
